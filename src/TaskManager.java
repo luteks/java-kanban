@@ -81,6 +81,7 @@ public class TaskManager {
 
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getUnicID(), subtask);
+        checkEpicStatus(subtask.getEpicID());
     }
 
     public void deleteTaskByID(int id) {
