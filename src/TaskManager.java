@@ -34,7 +34,7 @@ public class TaskManager {
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearSubtaskID();
-
+            checkEpicStatus(epic.getUnicID());
         }
     }
 
