@@ -6,11 +6,17 @@ public class Task {
     protected String name;
     protected String description;
     protected int unicID;
-    protected TaskStatus status = TaskStatus.NEW;
+    protected TaskStatus status;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Task(String name, String description, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
 
     public Task(String name, String description, int unicID, TaskStatus status) {
