@@ -1,14 +1,23 @@
+package taskManagers;
+
 import tasks.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class InMemoryTaskManager<T extends Task> implements TaskManager {
-    private int taskID = 1;
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private ArrayList<Task> history = new ArrayList<>();
+public class InMemoryTaskManager implements TaskManager {
+
+    private HashMap<Integer, Task> tasks;
+    private HashMap<Integer, Epic> epics;
+    private HashMap<Integer, Subtask> subtasks;
+    private InMemoryHistoryManager historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
+    private int idCount = 1;
+
+    public InMemoryTaskManager() {
+        tasks = new HashMap<>();
+        epics = new HashMap<>();
+        subtasks = new HashMap<>();
+    }
 
     @Override
     public ArrayList<Task> getTasksList() {
@@ -41,70 +50,67 @@ public class InMemoryTaskManager<T extends Task> implements TaskManager {
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearSubtaskID();
-            checkEpicStatus(epic.getUnicID());
+            checkEpicStatus(epic.getID());
         }
     }
 
     @Override
     public Task getTask(int id) {
-        Task task = tasks.get(id);
-        addHistory((T) task);
-        return task;
+        historyManager.add(tasks.get(id));
+        return tasks.get(id);
     }
 
     @Override
     public Epic getEpic(int id) {
-        Epic task = epics.get(id);
-        addHistory((T) task);
-        return task;
+        historyManager.add((Task) epics.get(id));
+        return epics.get(id);
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        Subtask task = subtasks.get(id);
-        addHistory((T) task);
-        return task;
+        historyManager.add((Task) subtasks.get(id));
+        return subtasks.get(id);
     }
 
     @Override
     public void addTask(Task task) {
-        task.setUnicID(taskID);
-        tasks.put(taskID, task);
-        taskID++;
+        task.setID(idCount);
+        tasks.put(idCount, task);
+        idCount++;
     }
 
     @Override
     public void addEpic(Epic epic) {
-        epic.setUnicID(taskID);
-        epics.put(taskID, epic);
-        taskID++;
+        epic.setID(idCount);
+        epics.put(idCount, epic);
+        idCount++;
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
         if (!(epics.isEmpty()) || epics.containsKey(subtask.getEpicID())) {
-            subtask.setUnicID(taskID);
-            subtasks.put(taskID, subtask);
+            subtask.setID(idCount);
+            subtasks.put(idCount, subtask);
 
             Epic epic = epics.get(subtask.getEpicID());
 
-            epic.addSubtaskID(taskID);
-            checkEpicStatus(epic.getUnicID());
-            taskID++;
+            epic.addSubtaskID(idCount);
+            checkEpicStatus(epic.getID());
+            idCount++;
         }
     }
 
     @Override
     public void updateTask(Task task) {
-        if (tasks.containsKey(task.getUnicID())) {
-            tasks.put(task.getUnicID(), task);
+        if (tasks.containsKey(task.getID())) {
+            tasks.put(task.getID(), task);
         }
     }
 
     @Override
     public void updateEpic(Epic epic) {
-        if (epics.containsKey(epic.getUnicID())){
-            Epic epicReq = epics.get(epic.getUnicID());
+        if (epics.containsKey(epic.getID())){
+            Epic epicReq = epics.get(epic.getID());
 
             epicReq.setName(epic.getName());
             epicReq.setDescription(epic.getDescription());
@@ -113,9 +119,9 @@ public class InMemoryTaskManager<T extends Task> implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (subtasks.containsKey(subtask.getUnicID())){
-            if (subtasks.get(subtask.getUnicID()).getEpicID() == subtask.getEpicID()){
-                subtasks.put(subtask.getUnicID(), subtask);
+        if (subtasks.containsKey(subtask.getID())){
+            if (subtasks.get(subtask.getID()).getEpicID() == subtask.getEpicID()){
+                subtasks.put(subtask.getID(), subtask);
                 checkEpicStatus(subtask.getEpicID());
             }
         }
@@ -145,7 +151,7 @@ public class InMemoryTaskManager<T extends Task> implements TaskManager {
 
             epic.deleteSubtaskID(id);
             subtasks.remove(id);
-            checkEpicStatus(epic.getUnicID());
+            checkEpicStatus(epic.getID());
         }
     }
 
@@ -165,18 +171,10 @@ public class InMemoryTaskManager<T extends Task> implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory(){
-        return history;
+    public ArrayList<Task> getHistory() {
+        return historyManager.getHistory();
     }
 
-    private void addHistory(T task) {
-        if (history.size() > 9) {
-            history.remove(0);
-            history.add(task);
-        } else {
-            history.add(task);
-        }
-    }
 
     private void checkEpicStatus(int id) {
         ArrayList<TaskStatus> statuses = checkEpicSubtasksStatues(getEpicSubtasksList(id));
@@ -203,24 +201,7 @@ public class InMemoryTaskManager<T extends Task> implements TaskManager {
 
         return statuses;
     }
-/*
-Возможность хранить задачи всех типов. Для этого вам нужно выбрать подходящую коллекцию.
-Методы для каждого из типа задач(Задача/Эпик/Подзадача):
- a. Получение списка всех задач.
- b. Удаление всех задач.
- c. Получение по идентификатору.
- d. Создание. Сам объект должен передаваться в качестве параметра.
- e. Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.
- f. Удаление по идентификатору.
-Дополнительные методы:
-a. Получение списка всех подзадач определённого эпика.
-Управление статусами осуществляется по следующему правилу:
- a. Менеджер сам не выбирает статус для задачи. Информация о нём приходит менеджеру вместе с информацией о самой задаче. По этим данным в одних случаях он будет сохранять статус, в других будет рассчитывать.
- b. Для эпиков:
-если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW.
-если все подзадачи имеют статус DONE, то и эпик считается завершённым — со статусом DONE.
-во всех остальных случаях статус должен быть IN_PROGRESS.
- */
+
 
 
 }

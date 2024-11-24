@@ -29,7 +29,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         String result = "Epic{" +
-                "id=" + getUnicID() +
+                "id=" + getID() +
                 ", name='" + getName() + '\'';
         if (getDescription() != null) {
             result = result + ", description.length='" + getDescription().length();

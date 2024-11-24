@@ -27,11 +27,11 @@ public class Task {
         this.status = status;
     }
 
-    public int getUnicID() {
+    public int getID() {
         return unicID;
     }
 
-    public void setUnicID(int id) {
+    public void setID(int id) {
         this.unicID = id;
     }
 

@@ -1,6 +1,6 @@
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+package taskManagers;
+
+import tasks.*;
 
 import java.util.ArrayList;
 
@@ -44,6 +44,5 @@ public interface TaskManager {
     ArrayList<Subtask> getEpicSubtasksList(int id);
 
     ArrayList<Task> getHistory();
-
     
 }
