@@ -6,7 +6,7 @@ import tasks.TaskStatus;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
         Task task1 = new Task("задача 1", "описание 1");
         Task task2 = new Task("задача 2", "описание 2");
@@ -48,8 +48,8 @@ public class Main {
         System.out.println(taskManager.getSubtasksList());
         System.out.println();
 
-        taskManager.deleteTaskByID(task1.getUnicID());
-        taskManager.deleteEpicByID(epic2.getUnicID());
+        taskManager.deleteTask(task1.getUnicID());
+        taskManager.deleteEpic(epic2.getUnicID());
 
         System.out.println(taskManager.getTasksList());
         System.out.println(taskManager.getEpicsList());
