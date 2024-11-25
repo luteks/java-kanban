@@ -4,13 +4,14 @@ import tasks.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epics;
-    private HashMap<Integer, Subtask> subtasks;
-    private InMemoryHistoryManager historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
+    private Map<Integer, Task> tasks;
+    private Map<Integer, Epic> epics;
+    private Map<Integer, Subtask> subtasks;
+    private HistoryManager historyManager = Managers.getDefaultHistory();
     private int idCount = 1;
 
     public InMemoryTaskManager() {
@@ -62,13 +63,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpic(int id) {
-        historyManager.add((Task) epics.get(id));
+        historyManager.add(epics.get(id));
         return epics.get(id);
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        historyManager.add((Task) subtasks.get(id));
+        historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
 
@@ -172,7 +173,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Task> getHistory() {
-        return historyManager.getHistory();
+        return (ArrayList<Task>) historyManager.getHistory();
     }
 
 
