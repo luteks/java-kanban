@@ -110,7 +110,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if (epics.containsKey(epic.getID())){
+        if (epics.containsKey(epic.getID())) {
             Epic epicReq = epics.get(epic.getID());
 
             epicReq.setName(epic.getName());
@@ -120,8 +120,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (subtasks.containsKey(subtask.getID())){
-            if (subtasks.get(subtask.getID()).getEpicID() == subtask.getEpicID()){
+        if (subtasks.containsKey(subtask.getID())) {
+            if (subtasks.get(subtask.getID()).getEpicID() == subtask.getEpicID()) {
                 subtasks.put(subtask.getID(), subtask);
                 checkEpicStatus(subtask.getEpicID());
             }
@@ -134,10 +134,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteEpic(int id){
+    public void deleteEpic(int id) {
         Epic epic = epics.get(id);
 
-        if (epic != null){
+        if (epic != null) {
             for (int subtaskID : epic.getSubtasksID()) {
                 subtasks.remove(subtaskID);
             }
@@ -202,7 +202,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         return statuses;
     }
-
 
 
 }
