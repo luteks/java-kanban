@@ -1,4 +1,4 @@
-import taskManagers.*;
+import taskmanagers.*;
 import tasks.*;
 
 public class Main {
@@ -29,7 +29,7 @@ public class Main {
 
         taskManager.addSubtask(subtask3);
 
-        Task task3 = new Task("Задача 21", "12313", task2.getID(), TaskStatus.IN_PROGRESS );
+        Task task3 = new Task("Задача 21", "12313", task2.getID(), TaskStatus.IN_PROGRESS);
         taskManager.updateTask(task3);
 
         Subtask subtask4 = new Subtask("Подзадача 123", "222222222", subtask1.getID(),
