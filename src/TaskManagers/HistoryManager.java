@@ -1,6 +1,6 @@
-package taskManagers;
+package TaskManagers;
 
-import tasks.Task;
+import Tasks.Task;
 
 import java.util.List;
 

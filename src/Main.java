@@ -1,5 +1,5 @@
-import taskManagers.*;
-import tasks.*;
+import TaskManagers.*;
+import Tasks.*;
 
 public class Main {
 

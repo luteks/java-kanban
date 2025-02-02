@@ -1,11 +1,11 @@
-package taskManagers;
+package TaskManagers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import tasks.*;
+import Tasks.*;
 
 import java.util.List;
 
