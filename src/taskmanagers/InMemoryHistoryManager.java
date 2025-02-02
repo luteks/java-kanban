@@ -48,17 +48,13 @@ public class InMemoryHistoryManager implements HistoryManager {
             head = next;
         } else {
             prev.next = next;
-            node.prev = null;
         }
 
         if (next == null) {
             tail = prev;
         } else {
             next.prev = prev;
-            node.next = null;
         }
-
-        node.item = null;
     }
 
     private ArrayList<Task> getTasks() {
@@ -99,6 +95,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (node != null) {
             removeNode(node);
         }
+
+        taskNodeMap.remove(id);
     }
 
 }
