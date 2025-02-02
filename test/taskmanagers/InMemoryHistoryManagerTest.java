@@ -1,7 +1,7 @@
-package TaskManagers;
+package taskmanagers;
 
 import org.junit.jupiter.api.Test;
-import Tasks.*;
+import tasks.*;
 
 import java.util.List;
 
