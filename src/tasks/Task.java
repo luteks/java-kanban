@@ -74,16 +74,7 @@ public class Task {
 
     @Override
     public String toString() {
-        String result = "Task{" +
-                "name='" + name + '\'' +
-                ", id=" + unicID;
-        if (description != null) {
-            result = result + ", description.length='" + description.length();
-        } else {
-            result = result + ", description=null'";
-        }
-        result += ", status=" + status +
-                '}';
-        return result;
+        return String.format("%d,%s,%s,%s,%s",
+                getID(), TaskType.TASK, getName(), getStatus(), getDescription());
     }
 }

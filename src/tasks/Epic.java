@@ -32,21 +32,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        String result = "Epic{" +
-                "id=" + getID() +
-                ", name='" + getName() + '\'';
-        if (getDescription() != null) {
-            result = result + ", description.length='" + getDescription().length();
-        } else {
-            result = result + ", description=null";
-        }
-        if (subtasksID.isEmpty()) {
-            result = result + ", subtasksId=null";
-        } else {
-            result = result + ", subtasksId=" + getSubtasksID();
-        }
-        return result +
-                ", status=" + getStatus() +
-                '}';
+        return String.format("%d,%s,%s,%s,%s",
+                getID(), TaskType.EPIC, getName(), getStatus(), getDescription());
     }
 }

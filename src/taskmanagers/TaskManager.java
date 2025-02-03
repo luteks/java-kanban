@@ -7,9 +7,9 @@ import java.util.List;
 public interface TaskManager {
     List<Task> getTasksList();
 
-    List<Task> getEpicsList();
+    List<Epic> getEpicsList();
 
-    List<Task> getSubtasksList();
+    List<Subtask> getSubtasksList();
 
     void clearTasksList();
 
