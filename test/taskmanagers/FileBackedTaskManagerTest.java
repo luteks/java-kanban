@@ -1,21 +1,30 @@
 package taskmanagers;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tasks.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import tasks.*;
-
-import java.util.List;
-
-public class InMemoryTaskManagerTest {
-
-    private InMemoryTaskManager taskManager;
+class FileBackedTaskManagerTest {
+    private FileBackedTaskManager taskManager;
+    private File file;
+    private Task updatedTask;
+    private Task task5;
+    private Epic epic2;
+    private Subtask subtask3;
 
     @BeforeEach
-    void beforeEach() {
-        taskManager = new InMemoryTaskManager();
+    public void beforeEach() throws IOException {
+        file = File.createTempFile("save", "csv");
+        taskManager = new FileBackedTaskManager(file.toPath());
     }
 
     @Test
@@ -119,4 +128,82 @@ public class InMemoryTaskManagerTest {
         assertNull(taskManager.getSubtask(subtask2.getID()), "Подзадача 2 должна быть удалена вместе с эпиком");
     }
 
+    @Test
+    void testCreatingAndUploadingEmptyFile() {
+        try {
+            assertNotNull(taskManager,
+                    "Метод loadFromFile() должен возвращать " +
+                            "проинициализированный экземпляр FileBackedTaskManager.");
+
+            String fileContent = Files.readString(file.toPath());
+            assertTrue(fileContent.isEmpty(), "Файл должен быть пустым.");
+
+        } catch (IOException e) {
+            fail("Не удалось выполнить тест: " + e.getMessage());
+        }
+    }
+
+    private void operationsWithTasksAndPopulateManager(FileBackedTaskManager fileBackedTaskManager) {
+        Task task1 = new Task("Первая", "1", TaskStatus.NEW);
+        fileBackedTaskManager.addTask(task1);
+        Task task2 = new Task("Вторая", "2", TaskStatus.DONE);
+        fileBackedTaskManager.addTask(task2);
+        Epic epic1 = new Epic("Первый", "1");
+        fileBackedTaskManager.addEpic(epic1);
+        epic2 = new Epic("Второй", "2");
+        fileBackedTaskManager.addEpic(epic2);
+        Subtask subtask1 = new Subtask(
+                "Первая", "1", TaskStatus.NEW, fileBackedTaskManager.getEpicsList().getFirst().getID());
+        fileBackedTaskManager.addSubtask(subtask1);
+        Subtask subtask2 = new Subtask(
+                "Вторая", "2", TaskStatus.NEW, fileBackedTaskManager.getEpicsList().getFirst().getID());
+        fileBackedTaskManager.addSubtask(subtask2);
+        subtask3 = new Subtask(
+                "Третья", "3", TaskStatus.NEW, fileBackedTaskManager.getEpicsList().getLast().getID());
+        fileBackedTaskManager.addSubtask(subtask3);
+        epic2.addSubtaskID(subtask3.getID());
+
+        updatedTask = new Task(
+                "Четвертая", "Обновленная", fileBackedTaskManager.getTasksList().getFirst().getID(), TaskStatus.DONE);
+        fileBackedTaskManager.updateTask(updatedTask);
+
+        fileBackedTaskManager.deleteTask(fileBackedTaskManager.getTasksList().getLast().getID());
+        fileBackedTaskManager.deleteEpic(fileBackedTaskManager.getEpicsList().getFirst().getID());
+
+        task5 = new Task("Пятая", "5", TaskStatus.NEW);
+        fileBackedTaskManager.addTask(task5);
+    }
+
+    @Test
+    void savingTasks() {
+        operationsWithTasksAndPopulateManager(taskManager);
+
+        assertEquals(2, taskManager.getTasksList().size(), "Должны быть две задачи.");
+        assertEquals(updatedTask, taskManager.getTasksList().getFirst(), "Задача должна совпадать.");
+        assertEquals(task5, taskManager.getTasksList().getLast(), "Задача должна совпадать.");
+
+        assertEquals(1, taskManager.getEpicsList().size(), "Количество эпиков должно совпадать.");
+        assertEquals(epic2, taskManager.getEpicsList().getFirst(), "Эпик должен совпадать.");
+
+        assertEquals(1, taskManager.getSubtasksList().size(), "Количество сабтасок должно совпадать.");
+        assertEquals(subtask3, taskManager.getSubtasksList().getFirst(), "Сабтаск должен совпадать.");
+        assertEquals(subtask3.getEpicID(), epic2.getID(), "Сабтаск не привязан.");
+    }
+
+    @Test
+    void loadingTasks() {
+        operationsWithTasksAndPopulateManager(taskManager);
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+
+        assertEquals(2, loadedManager.getTasksList().size(), "Количество задач должно совпадать.");
+        assertEquals(updatedTask, loadedManager.getTasksList().getFirst(), "Задача должна совпадать.");
+        assertEquals(task5, loadedManager.getTasksList().getLast(), "Задача должна совпадать.");
+
+        assertEquals(1, loadedManager.getEpicsList().size(), "Количество эпиков должно совпадать.");
+        assertEquals(epic2, loadedManager.getEpicsList().getFirst(), "Эпик должен совпадать.");
+
+        assertEquals(1, loadedManager.getSubtasksList().size(), "Количество сабтасок должно совпадать.");
+        assertEquals(subtask3, loadedManager.getSubtasksList().getFirst(), "Сабтаск должен совпадать.");
+        assertEquals(subtask3.getEpicID(), epic2.getID(), "Сабтаск не привязан.");
+    }
 }
