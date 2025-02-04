@@ -2,14 +2,19 @@ package taskmanagers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +29,14 @@ class FileBackedTaskManagerTest {
     @BeforeEach
     public void beforeEach() throws IOException {
         file = File.createTempFile("save", "csv");
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("id,type,name,status,description,epic");
+            writer.newLine();
+        } catch (IOException exception) {
+            throw new ManagerSaveException("Ошибка при сохранении данных в файл.", exception);
+        }
+
         taskManager = new FileBackedTaskManager(file.toPath());
     }
 
@@ -135,8 +148,8 @@ class FileBackedTaskManagerTest {
                     "Метод loadFromFile() должен возвращать " +
                             "проинициализированный экземпляр FileBackedTaskManager.");
 
-            String fileContent = Files.readString(file.toPath());
-            assertTrue(fileContent.isEmpty(), "Файл должен быть пустым.");
+            List<String> fileContent = Files.readAllLines(file.toPath());
+            assertEquals(1, fileContent.size(), "Файл должен быть пустым.");
 
         } catch (IOException e) {
             fail("Не удалось выполнить тест: " + e.getMessage());
@@ -175,7 +188,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void savingTasks() {
+    void testSavingTasks() {
         operationsWithTasksAndPopulateManager(taskManager);
 
         assertEquals(2, taskManager.getTasksList().size(), "Должны быть две задачи.");
@@ -191,7 +204,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void loadingTasks() {
+    void testLoadingTasks() {
         operationsWithTasksAndPopulateManager(taskManager);
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 

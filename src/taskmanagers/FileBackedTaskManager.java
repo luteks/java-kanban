@@ -41,6 +41,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(saveFile))) {
+            writer.write("id,type,name,status,description,epic");
+            writer.newLine();
             for (Task task : getTasksList()) {
                 writer.write(task.toString());
                 writer.newLine();
@@ -61,38 +63,39 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         if (file == null) {
-            System.out.println("Файл сохранения отсутствует.");
-            return null;
-        }
+            throw new NullPointerException("Файл не существует.");
+        } else {
 
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+            FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            while (bufferedReader.ready()) {
-                String string = bufferedReader.readLine().trim();
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+                bufferedReader.readLine();
+                while (bufferedReader.ready()) {
+                    String string = bufferedReader.readLine().trim();
 
-                if (!string.isEmpty()) {
-                    Task task = fileBackedTaskManager.fromString(string);
+                    if (!string.isEmpty()) {
+                        Task task = fileBackedTaskManager.fromString(string);
 
-                    switch (task) {
-                        case null -> {
-                            System.out.println("Ошибка. Задача пустая");
-                            return null;
+                        switch (task) {
+                            case null -> {
+                                System.out.println("Ошибка. Задача пустая");
+                                return null;
+                            }
+                            case Epic epic -> fileBackedTaskManager.addEpicFromFile(epic);
+                            case Subtask subtask -> fileBackedTaskManager.addSubtaskFromFile(subtask);
+                            default -> fileBackedTaskManager.addTaskFromFile(task);
                         }
-                        case Epic epic -> fileBackedTaskManager.addEpicFromFile(epic);
-                        case Subtask subtask -> fileBackedTaskManager.addSubtaskFromFile(subtask);
-                        default -> fileBackedTaskManager.addTaskFromFile(task);
                     }
                 }
+
+            } catch (IOException exception) {
+                throw new RuntimeException("Ошибка при загрузке данных из файла", exception);
             }
 
-        } catch (IOException exception) {
-            throw new RuntimeException("Ошибка при загрузке данных из файла", exception);
+            return fileBackedTaskManager;
         }
-
-        return fileBackedTaskManager;
     }
 
     private Task fromString(String value) {
@@ -136,7 +139,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return subtask;
     }
 
-    public void addTaskFromFile(Task task) {
+    private void addTaskFromFile(Task task) {
         int taskId = task.getID();
         Task taskCopy = new Task(task.getName(), task.getDescription(), task.getStatus());
         taskCopy.setID(taskId);
@@ -149,7 +152,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         System.out.println("Таск загружен: " + taskCopy);
     }
 
-    public void addEpicFromFile(Epic epic) {
+    private void addEpicFromFile(Epic epic) {
         int epicID = epic.getID();
         Epic epicCopy = new Epic(epic.getName(), epic.getDescription());
         epicCopy.setID(epicID);
@@ -162,7 +165,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         System.out.println("Эпик загружен: " + epicCopy);
     }
 
-    public void addSubtaskFromFile(Subtask subtask) {
+    private void addSubtaskFromFile(Subtask subtask) {
         Epic epic = epics.get(subtask.getEpicID());
 
         int subtaskID = subtask.getID();
@@ -216,26 +219,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    @Override
-    public Task getTask(int id) {
-        Task task = super.getTask(id);
-        save();
-        return task;
-    }
-
-    @Override
-    public Epic getEpic(int id) {
-        Epic epic = super.getEpic(id);
-        save();
-        return epic;
-    }
-
-    @Override
-    public Subtask getSubtask(int id) {
-        Subtask subtask = super.getSubtask(id);
-        save();
-        return subtask;
-    }
 
     @Override
     public void deleteTask(int id) {
