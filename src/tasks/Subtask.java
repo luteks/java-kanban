@@ -25,16 +25,8 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String result = "Subtask{" +
-                "epicId=" + epicID +
-                ", id=" + getID() +
-                ", name='" + getName() + '\'';
-        if (getDescription() != null) {
-            result = result + ", description.length='" + getDescription().length();
-        } else {
-            result = result + ", description=null";
-        }
-        return result + ", status=" + getStatus() +
-                '}';
+        return String.format("%d,%s,%s,%s,%s,%d",
+                getID(), TaskType.SUBTASK, getName(),
+                getStatus(), getDescription(), getEpicID());
     }
 }

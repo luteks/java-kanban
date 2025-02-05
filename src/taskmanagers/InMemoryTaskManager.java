@@ -4,15 +4,16 @@ import tasks.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private Map<Integer, Task> tasks;
-    private Map<Integer, Epic> epics;
-    private Map<Integer, Subtask> subtasks;
-    private HistoryManager historyManager = Managers.getDefaultHistory();
-    private int idCount = 1;
+    protected final Map<Integer, Task> tasks;
+    protected final Map<Integer, Epic> epics;
+    protected final Map<Integer, Subtask> subtasks;
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int idCount = 1;
 
     public InMemoryTaskManager() {
         tasks = new HashMap<>();
@@ -21,17 +22,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getTasksList() {
+    public List<Task> getTasksList() {
         return new ArrayList<>(tasks.values());
     }
 
     @Override
-    public ArrayList<Task> getEpicsList() {
+    public List<Epic> getEpicsList() {
         return new ArrayList<>(epics.values());
     }
 
     @Override
-    public ArrayList<Task> getSubtasksList() {
+    public List<Subtask> getSubtasksList() {
         return new ArrayList<>(subtasks.values());
     }
 
@@ -173,7 +174,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getEpicSubtasksList(int id) {
+    public List<Subtask> getEpicSubtasksList(int id) {
         Epic epic = epics.get(id);
         ArrayList<Subtask> epicSubtasks = new ArrayList<>();
 
@@ -193,8 +194,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    private void checkEpicStatus(int id) {
-        ArrayList<TaskStatus> statuses = checkEpicSubtasksStatues(getEpicSubtasksList(id));
+    protected void checkEpicStatus(int id) {
+        List<TaskStatus> statuses = checkEpicSubtasksStatues(getEpicSubtasksList(id));
 
         if (statuses.size() == 1 && statuses.contains(TaskStatus.NEW) || statuses.isEmpty()) {
             epics.get(id).setStatus(TaskStatus.NEW);
@@ -205,7 +206,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private ArrayList<TaskStatus> checkEpicSubtasksStatues(ArrayList<Subtask> subtasksList) {
+    private List<TaskStatus> checkEpicSubtasksStatues(List<Subtask> subtasksList) {
         ArrayList<TaskStatus> statuses = new ArrayList<>();
 
         for (Subtask subtask : subtasksList) {
