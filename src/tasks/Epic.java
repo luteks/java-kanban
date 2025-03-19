@@ -1,17 +1,23 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtasksID;
+    private final ArrayList<Integer> subtasksID = new ArrayList<>();
 
     public Epic(String name, String description) {
-        super(name, description, TaskStatus.NEW);
-        subtasksID = new ArrayList<>();
+        super(name, description, TaskStatus.NEW, null, null);
     }
 
-    public Epic(String name, String description, int id) {
-        super(name, description, id, TaskStatus.NEW);
+    public Epic(int id, String name, String description) {
+        super(id, name, description, TaskStatus.NEW, null, null);
+    }
+
+    public Epic(int id, String name, String description, TaskStatus status,
+                LocalDateTime startTime, Duration duration) {
+        super(id, name, description, status, startTime, duration);
     }
 
     public ArrayList<Integer> getSubtasksID() {
@@ -32,7 +38,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return String.format("%d,%s,%s,%s,%s",
-                getID(), TaskType.EPIC, getName(), getStatus(), getDescription());
+        return String.format("%d,%s,%s,%s,%s,%s,%s",
+                getID(), TaskType.EPIC, getName(), getStatus(), getDescription(), getStartTime(), getDuration());
     }
 }

@@ -4,7 +4,7 @@ import tasks.*;
 public class Main {
 
     public static void main(String[] args) {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+      /*  InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
         Task task1 = new Task("задача 1", "описание 1");
         Task task2 = new Task("задача 2", "описание 2");
@@ -60,6 +60,6 @@ public class Main {
         System.out.println("История:");
         for (Task task : taskManager.getHistory()) {
             System.out.println(task);
-        }
+        }*/
     }
 }
