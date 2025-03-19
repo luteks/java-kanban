@@ -114,7 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         task = new Task(taskId, task.getName(), task.getDescription(),
-                    task.getStatus(), task.getStartTime(), task.getDuration());
+                task.getStatus(), task.getStartTime(), task.getDuration());
 
 
         if (task.getStartTime() != null) {
@@ -163,7 +163,7 @@ public class InMemoryTaskManager implements TaskManager {
             subtaskId = subtask.getID();
         }
         subtask = new Subtask(subtaskId, subtask.getEpicID(), subtask.getName(), subtask.getDescription(),
-                    subtask.getStatus(), subtask.getStartTime(), subtask.getDuration());
+                subtask.getStatus(), subtask.getStartTime(), subtask.getDuration());
 
         subtasks.put(subtaskId, subtask);
         epic.addSubtaskID(subtaskId);
