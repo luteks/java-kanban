@@ -134,18 +134,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void testAddTaskWithoutStartTimeOrDuration() {
-        Task taskWithoutTime = new Task(
-                "Без времени", "Описание", TaskStatus.NEW, null, null);
-
-        TaskIntersectionException exception = assertThrows(TaskIntersectionException.class, () -> {
-            taskManager.addTask(taskWithoutTime);
-        });
-
-        assertEquals("В задаче отсутствует время начала или окончания.", exception.getMessage());
-    }
-
-    @Test
     void testTaskIntersectionException() {
         taskManager.addTask(task1);
 
