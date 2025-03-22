@@ -1,5 +1,6 @@
 package taskmanagers;
 
+import exceptions.TaskIntersectionException;
 import tasks.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface TaskManager {
 
     Subtask getSubtask(int id);
 
-    void addTask(Task task);
+    void addTask(Task task) throws TaskIntersectionException;
 
     void addEpic(Epic epic);
 
@@ -44,5 +45,7 @@ public interface TaskManager {
     List<Subtask> getEpicSubtasksList(int id);
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
 
 }
