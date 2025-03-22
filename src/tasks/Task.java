@@ -1,26 +1,34 @@
 package tasks;
 
+import com.google.gson.annotations.Expose;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
+    @Expose
     protected String name;
+    @Expose
     protected String description;
+    @Expose
     protected int id;
+    @Expose
     protected TaskStatus status;
+    @Expose
     protected Duration duration;
+    @Expose
     protected LocalDateTime startTime;
 
     public Task(String name, String description, TaskStatus status) {
-        this.id = 0;
+        this.id = -1;
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
     public Task(String name, String description, TaskStatus status, LocalDateTime startTime, Duration duration) {
-        this.id = 0;
+        this.id = -1;
         this.name = name;
         this.description = description;
         this.status = status;
